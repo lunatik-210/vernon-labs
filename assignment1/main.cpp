@@ -9,13 +9,16 @@ using namespace std;
 struct Table;
 struct Tournament;
 struct Game;
+struct Result;
 
-struct Table {
+struct Table 
+{
     int tournament_number;
     vector<Tournament> tournaments;
 };
 
-struct Tournament {
+struct Tournament 
+{
     string name;
 
     int team_number;
@@ -25,7 +28,8 @@ struct Tournament {
     vector<Game> game;
 };
 
-struct Game {
+struct Game 
+{
     string team_name1;
     int goal_number1;
 
@@ -33,11 +37,27 @@ struct Game {
     int goal_number2;
 };
 
+struct Result 
+{
+    string team_name;
+
+    int earned_points;
+    int played_game_number;
+    int win_number;
+    int tie_number;
+    int loose_number;
+    int goal_difference;
+    int scored_goal_number;
+    int against_goal_number;
+};
+
 int to_int(string str);
 bool get_string(ifstream& file, string& line);
 bool parse_table(ifstream& file, Table& table);
 bool parse_tournament(ifstream& file, Tournament& table);
 bool parse_game(string& str, Game& game);
+void print_table(const Table& table);
+void calculate_results(const Tournament& tournament, vector<Result>& results);
 
 int to_int(string str)
 {
@@ -217,6 +237,84 @@ void print_table(const Table& table)
     }
 }
 
+void print_tournament_results(const Tournament& tournament, const vector<Result>& results)
+{
+    cout << tournament.name << endl;
+
+    for(int j = 0; j < results.size(); ++j )
+    {
+        cout << j << ") " << results[j].team_name << " "
+             << results[j].earned_points << "p, "
+             << results[j].played_game_number << "g "
+             << "(" << results[j].win_number 
+             << "-" << results[j].tie_number
+             << "-" << results[j].loose_number << "), "
+             << results[j].goal_difference << "gd "
+             << "(" << results[j].scored_goal_number
+             << "-" << results[j].against_goal_number << ")"
+             << endl;
+    }
+
+    cout << endl;
+}
+
+
+void calculate_results(const Tournament& tournament, vector<Result>& results)
+{
+    for(int i = 0; i<tournament.team_number; ++i)
+    {
+        Result r = { tournament.team_names[i], 0, 0, 0, 0, 0, 0, 0, 0 };
+
+        for(int j = 0; j<tournament.game_number; ++j)
+        {
+            if(r.team_name == tournament.game[j].team_name1)
+            {
+                r.scored_goal_number += tournament.game[j].goal_number1;
+                r.against_goal_number += tournament.game[j].goal_number2;
+                r.goal_difference = r.scored_goal_number - r.against_goal_number;
+                r.played_game_number += 1;
+                if(tournament.game[j].goal_number1>tournament.game[j].goal_number2)
+                {
+                    r.win_number += 1;
+                    r.earned_points += 3;
+                }
+                else if (tournament.game[j].goal_number1<tournament.game[j].goal_number2)
+                {
+                    r.loose_number += 1;
+                }
+                else
+                {
+                    r.tie_number += 1;
+                    r.earned_points += 1;
+                }
+            }
+            if(r.team_name == tournament.game[j].team_name2)
+            {
+                r.scored_goal_number += tournament.game[j].goal_number2;
+                r.against_goal_number += tournament.game[j].goal_number1;
+                r.goal_difference = r.scored_goal_number - r.against_goal_number;
+                r.played_game_number+=1;
+                if(tournament.game[j].goal_number1<tournament.game[j].goal_number2)
+                {
+                    r.win_number += 1;
+                    r.earned_points += 3;
+                }
+                else if (tournament.game[j].goal_number1>tournament.game[j].goal_number2)
+                {
+                    r.loose_number += 1;
+                }
+                else
+                {
+                    r.tie_number += 1;
+                    r.earned_points += 1;
+                } 
+            }
+        }
+
+        results.push_back(r);
+    }
+}
+
 int main(int argc, char** argv)
 {
     if(argc != 2)
@@ -236,6 +334,13 @@ int main(int argc, char** argv)
         return 1;
 
     print_table(table);
+
+    for(int i = 0; i < table.tournament_number; ++i)
+    {
+        vector<Result> results;
+        calculate_results(table.tournaments[i], results);
+        print_tournament_results(table.tournaments[i], results);
+    }
 
     return 0;
 }
