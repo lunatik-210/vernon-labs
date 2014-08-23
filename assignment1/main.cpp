@@ -245,7 +245,7 @@ void print_tournament_results(const Tournament& tournament, const vector<Result>
 
     for(int j = 0; j < results.size(); ++j )
     {
-        cout << j << ") " << results[j].team_name << " "
+        cout << j+1 << ") " << results[j].team_name << " "
              << results[j].earned_points << "p, "
              << results[j].played_game_number << "g "
              << "(" << results[j].win_number 
@@ -456,7 +456,7 @@ int main(int argc, char** argv)
     if(!parse_table(file, table))
         return 1;
 
-    print_table(table);
+    //print_table(table);
 
     for(int i = 0; i < table.tournament_number; ++i)
     {
