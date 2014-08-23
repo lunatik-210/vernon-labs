@@ -414,12 +414,12 @@ void sort_results(vector<Result>& v)
                 string name1 = v[j].team_name;
                 string name2 = v[j+1].team_name;
 
-                for(int i = 0; name1.length(); i++)
+                for(int l = 0; l < name1.length(); ++l)
                 {
                     name1[i] = tolower(name1[i]);
                 }
                 
-                for(int i = 0; name2.length(); i++)
+                for(int l = 0; l < name2.length(); ++l)
                 {
                     name2[i] = tolower(name2[i]);
                 }
@@ -427,7 +427,7 @@ void sort_results(vector<Result>& v)
                 int k = 0;
                 while(name1[k]==name2[k]) ++k;
 
-                if(name1[k] < name2[k])
+                if(name1[k] > name2[k])
                 {
                     Result saved = v[j];
                     v[j] = v[j+1];
