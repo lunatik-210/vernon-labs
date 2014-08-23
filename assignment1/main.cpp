@@ -57,7 +57,9 @@ bool parse_table(ifstream& file, Table& table);
 bool parse_tournament(ifstream& file, Tournament& table);
 bool parse_game(string& str, Game& game);
 void print_table(const Table& table);
+void print_tournament_results(const Tournament& tournament, const vector<Result>& results);
 void calculate_results(const Tournament& tournament, vector<Result>& results);
+void sort_results(vector<Result>& v);
 
 int to_int(string str)
 {
@@ -315,6 +317,127 @@ void calculate_results(const Tournament& tournament, vector<Result>& results)
     }
 }
 
+void sort_results(vector<Result>& v)
+{
+    for(int i = 0; i < v.size(); ++i)
+    {
+        for(int j = 0; j < v.size()-1; ++j)
+        {
+            if(v[j].earned_points < v[j+1].earned_points)
+            {
+                Result saved = v[j];
+                v[j] = v[j+1];
+                v[j+1] = saved;
+            }
+        }
+    }
+
+    for(int i = 0; i < v.size(); ++i)
+    {
+        for(int j = 0; j < v.size()-1; ++j)
+        {
+            if(v[j].earned_points == v[j+1].earned_points)
+            {
+                if(v[j].win_number < v[j+1].win_number)
+                {
+                    Result saved = v[j];
+                    v[j] = v[j+1];
+                    v[j+1] = saved;                    
+                }
+            }
+        }
+    }
+
+    for(int i = 0; i < v.size(); ++i)
+    {
+        for(int j = 0; j < v.size()-1; ++j)
+        {
+            if(v[j].earned_points == v[j+1].earned_points and v[j].win_number == v[j+1].win_number)
+            {
+                if(v[j].goal_difference < v[j+1].goal_difference)
+                {
+                    Result saved = v[j];
+                    v[j] = v[j+1];
+                    v[j+1] = saved;                    
+                }
+            }
+        }
+    }
+
+    for(int i = 0; i < v.size(); ++i)
+    {
+        for(int j = 0; j < v.size()-1; ++j)
+        {
+            if( v[j].earned_points == v[j+1].earned_points and 
+                v[j].win_number == v[j+1].win_number and 
+                v[j].goal_difference == v[j+1].goal_difference )
+            {
+                if(v[j].scored_goal_number < v[j+1].scored_goal_number)
+                {
+                    Result saved = v[j];
+                    v[j] = v[j+1];
+                    v[j+1] = saved;                    
+                }
+            }
+        }
+    }
+
+    for(int i = 0; i < v.size(); ++i)
+    {
+        for(int j = 0; j < v.size()-1; ++j)
+        {
+            if( v[j].earned_points == v[j+1].earned_points and 
+                v[j].win_number == v[j+1].win_number and 
+                v[j].goal_difference == v[j+1].goal_difference and
+                v[j].scored_goal_number == v[j+1].scored_goal_number )
+            {
+                if(v[j].played_game_number > v[j+1].played_game_number)
+                {
+                    Result saved = v[j];
+                    v[j] = v[j+1];
+                    v[j+1] = saved;                    
+                }
+            }
+        }
+    }
+
+    for(int i = 0; i < v.size(); ++i)
+    {
+        for(int j = 0; j < v.size()-1; ++j)
+        {
+            if( v[j].earned_points == v[j+1].earned_points and 
+                v[j].win_number == v[j+1].win_number and 
+                v[j].goal_difference == v[j+1].goal_difference and
+                v[j].scored_goal_number == v[j+1].scored_goal_number and 
+                v[j].played_game_number == v[j+1].played_game_number )
+            {
+                string name1 = v[j].team_name;
+                string name2 = v[j+1].team_name;
+
+                for(int i = 0; name1.length(); i++)
+                {
+                    name1[i] = tolower(name1[i]);
+                }
+                
+                for(int i = 0; name2.length(); i++)
+                {
+                    name2[i] = tolower(name2[i]);
+                }
+
+                int k = 0;
+                while(name1[k]==name2[k]) ++k;
+
+                if(name1[k] < name2[k])
+                {
+                    Result saved = v[j];
+                    v[j] = v[j+1];
+                    v[j+1] = saved;
+                }
+            }
+        }
+    }
+}
+
 int main(int argc, char** argv)
 {
     if(argc != 2)
@@ -339,6 +462,7 @@ int main(int argc, char** argv)
     {
         vector<Result> results;
         calculate_results(table.tournaments[i], results);
+        sort_results(results);
         print_tournament_results(table.tournaments[i], results);
     }
 
