@@ -114,6 +114,8 @@ void process_error(error err)
             break;
         case ERROR_INCORRECT_INPUT_FILE_NAME:
             cerr << "ERROR: Input file isn't specified" << endl;
+        case ERROR_CANNT_OPEN_THE_FILE:
+            cerr << "ERROR: File with the given input name cann't be oppened" << endl;
         default:
             cerr << "ERROR: unknown" << endl;
     }
@@ -455,7 +457,9 @@ int main(int argc, char** argv)
     ifstream file(argv[1]);
 
     if (!file.is_open())
-        return 1;
+    {
+        process_error(ERROR_CANNT_OPEN_THE_FILE);
+    }
 
     Table table;
 
