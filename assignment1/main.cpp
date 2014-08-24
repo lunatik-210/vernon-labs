@@ -261,6 +261,26 @@ void print_tournament_results(const Tournament& tournament, const vector<Result>
     cout << endl;
 }
 
+void fill_result(Result& r, int goal_number1, int goal_number2)
+{
+    r.scored_goal_number += goal_number1;
+    r.against_goal_number += goal_number2;
+    r.goal_difference = r.scored_goal_number - r.against_goal_number;
+    r.played_game_number += 1;
+    if(goal_number1>goal_number2)
+    {
+        r.win_number += 1;
+        r.earned_points += 3;
+        return;
+    }
+    if (goal_number1<goal_number2)
+    {
+        r.loose_number += 1;
+        return;
+    }
+    r.tie_number += 1;
+    r.earned_points += 1;
+}
 
 void calculate_results(const Tournament& tournament, vector<Result>& results)
 {
@@ -272,45 +292,11 @@ void calculate_results(const Tournament& tournament, vector<Result>& results)
         {
             if(r.team_name == tournament.game[j].team_name1)
             {
-                r.scored_goal_number += tournament.game[j].goal_number1;
-                r.against_goal_number += tournament.game[j].goal_number2;
-                r.goal_difference = r.scored_goal_number - r.against_goal_number;
-                r.played_game_number += 1;
-                if(tournament.game[j].goal_number1>tournament.game[j].goal_number2)
-                {
-                    r.win_number += 1;
-                    r.earned_points += 3;
-                }
-                else if (tournament.game[j].goal_number1<tournament.game[j].goal_number2)
-                {
-                    r.loose_number += 1;
-                }
-                else
-                {
-                    r.tie_number += 1;
-                    r.earned_points += 1;
-                }
+                fill_result(r, tournament.game[j].goal_number1, tournament.game[j].goal_number2);
             }
             if(r.team_name == tournament.game[j].team_name2)
             {
-                r.scored_goal_number += tournament.game[j].goal_number2;
-                r.against_goal_number += tournament.game[j].goal_number1;
-                r.goal_difference = r.scored_goal_number - r.against_goal_number;
-                r.played_game_number+=1;
-                if(tournament.game[j].goal_number1<tournament.game[j].goal_number2)
-                {
-                    r.win_number += 1;
-                    r.earned_points += 3;
-                }
-                else if (tournament.game[j].goal_number1>tournament.game[j].goal_number2)
-                {
-                    r.loose_number += 1;
-                }
-                else
-                {
-                    r.tie_number += 1;
-                    r.earned_points += 1;
-                } 
+                fill_result(r, tournament.game[j].goal_number2, tournament.game[j].goal_number1);
             }
         }
 
