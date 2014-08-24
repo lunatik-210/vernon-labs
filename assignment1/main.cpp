@@ -60,6 +60,7 @@ void print_table(const Table& table);
 void print_tournament_results(const Tournament& tournament, const vector<Result>& results);
 void calculate_results(const Tournament& tournament, vector<Result>& results);
 void sort_results(vector<Result>& v);
+bool criterion(const vector<Result>& v, const int index);
 
 int to_int(string str)
 {
@@ -317,11 +318,46 @@ void calculate_results(const Tournament& tournament, vector<Result>& results)
     }
 }
 
-void swap_with_next(vector<Result>& v, int index)
+bool criterion(const vector<Result>& v, const int index)
 {
-    Result saved = v[index];
-    v[index] = v[index+1];
-    v[index+1] = saved;
+    if(v[index].earned_points != v[index+1].earned_points)
+    {
+        return (v[index].earned_points < v[index+1].earned_points);
+    }
+    if(v[index].win_number != v[index+1].win_number)
+    {
+        return (v[index].win_number < v[index+1].win_number);
+    }
+    if(v[index].goal_difference != v[index+1].goal_difference)
+    {
+        return (v[index].goal_difference < v[index+1].goal_difference);
+    }
+    if(v[index].scored_goal_number != v[index+1].scored_goal_number)
+    {
+        return (v[index].scored_goal_number < v[index+1].scored_goal_number);
+    }
+    if(v[index].played_game_number != v[index+1].played_game_number)
+    {
+        return (v[index].played_game_number > v[index+1].played_game_number);
+    }
+
+    string name1 = v[index].team_name;
+    string name2 = v[index+1].team_name;
+
+    for(int l = 0; l < name1.length(); ++l)
+    {
+        name1[l] = tolower(name1[l]);
+    }
+    
+    for(int l = 0; l < name2.length(); ++l)
+    {
+        name2[l] = tolower(name2[l]);
+    }
+
+    int k = 0;
+    while(name1[k]==name2[k]) ++k;
+
+    return (name1[k] > name2[k]);
 }
 
 void sort_results(vector<Result>& v)
@@ -330,104 +366,11 @@ void sort_results(vector<Result>& v)
     {
         for(int j = 0; j < v.size()-1; ++j)
         {
-            if(v[j].earned_points < v[j+1].earned_points)
+            if(criterion(v, j))
             {
-                swap_with_next(v, j);
-            }
-        }
-    }
-
-    for(int i = 0; i < v.size(); ++i)
-    {
-        for(int j = 0; j < v.size()-1; ++j)
-        {
-            if(v[j].earned_points == v[j+1].earned_points)
-            {
-                if(v[j].win_number < v[j+1].win_number)
-                {
-                    swap_with_next(v, j);                  
-                }
-            }
-        }
-    }
-
-    for(int i = 0; i < v.size(); ++i)
-    {
-        for(int j = 0; j < v.size()-1; ++j)
-        {
-            if(v[j].earned_points == v[j+1].earned_points and v[j].win_number == v[j+1].win_number)
-            {
-                if(v[j].goal_difference < v[j+1].goal_difference)
-                {
-                    swap_with_next(v, j);                    
-                }
-            }
-        }
-    }
-
-    for(int i = 0; i < v.size(); ++i)
-    {
-        for(int j = 0; j < v.size()-1; ++j)
-        {
-            if( v[j].earned_points == v[j+1].earned_points and 
-                v[j].win_number == v[j+1].win_number and 
-                v[j].goal_difference == v[j+1].goal_difference )
-            {
-                if(v[j].scored_goal_number < v[j+1].scored_goal_number)
-                {
-                    swap_with_next(v, j);             
-                }
-            }
-        }
-    }
-
-    for(int i = 0; i < v.size(); ++i)
-    {
-        for(int j = 0; j < v.size()-1; ++j)
-        {
-            if( v[j].earned_points == v[j+1].earned_points and 
-                v[j].win_number == v[j+1].win_number and 
-                v[j].goal_difference == v[j+1].goal_difference and
-                v[j].scored_goal_number == v[j+1].scored_goal_number )
-            {
-                if(v[j].played_game_number > v[j+1].played_game_number)
-                {
-                    swap_with_next(v, j);                  
-                }
-            }
-        }
-    }
-
-    for(int i = 0; i < v.size(); ++i)
-    {
-        for(int j = 0; j < v.size()-1; ++j)
-        {
-            if( v[j].earned_points == v[j+1].earned_points and 
-                v[j].win_number == v[j+1].win_number and 
-                v[j].goal_difference == v[j+1].goal_difference and
-                v[j].scored_goal_number == v[j+1].scored_goal_number and 
-                v[j].played_game_number == v[j+1].played_game_number )
-            {
-                string name1 = v[j].team_name;
-                string name2 = v[j+1].team_name;
-
-                for(int l = 0; l < name1.length(); ++l)
-                {
-                    name1[i] = tolower(name1[i]);
-                }
-                
-                for(int l = 0; l < name2.length(); ++l)
-                {
-                    name2[i] = tolower(name2[i]);
-                }
-
-                int k = 0;
-                while(name1[k]==name2[k]) ++k;
-
-                if(name1[k] > name2[k])
-                {
-                    swap_with_next(v, j);
-                }
+                Result saved = v[j];
+                v[j] = v[j+1];
+                v[j+1] = saved;
             }
         }
     }
