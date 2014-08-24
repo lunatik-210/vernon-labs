@@ -317,6 +317,13 @@ void calculate_results(const Tournament& tournament, vector<Result>& results)
     }
 }
 
+void swap_with_next(vector<Result>& v, int index)
+{
+    Result saved = v[index];
+    v[index] = v[index+1];
+    v[index+1] = saved;
+}
+
 void sort_results(vector<Result>& v)
 {
     for(int i = 0; i < v.size(); ++i)
@@ -325,9 +332,7 @@ void sort_results(vector<Result>& v)
         {
             if(v[j].earned_points < v[j+1].earned_points)
             {
-                Result saved = v[j];
-                v[j] = v[j+1];
-                v[j+1] = saved;
+                swap_with_next(v, j);
             }
         }
     }
@@ -340,9 +345,7 @@ void sort_results(vector<Result>& v)
             {
                 if(v[j].win_number < v[j+1].win_number)
                 {
-                    Result saved = v[j];
-                    v[j] = v[j+1];
-                    v[j+1] = saved;                    
+                    swap_with_next(v, j);                  
                 }
             }
         }
@@ -356,9 +359,7 @@ void sort_results(vector<Result>& v)
             {
                 if(v[j].goal_difference < v[j+1].goal_difference)
                 {
-                    Result saved = v[j];
-                    v[j] = v[j+1];
-                    v[j+1] = saved;                    
+                    swap_with_next(v, j);                    
                 }
             }
         }
@@ -374,9 +375,7 @@ void sort_results(vector<Result>& v)
             {
                 if(v[j].scored_goal_number < v[j+1].scored_goal_number)
                 {
-                    Result saved = v[j];
-                    v[j] = v[j+1];
-                    v[j+1] = saved;                    
+                    swap_with_next(v, j);             
                 }
             }
         }
@@ -393,9 +392,7 @@ void sort_results(vector<Result>& v)
             {
                 if(v[j].played_game_number > v[j+1].played_game_number)
                 {
-                    Result saved = v[j];
-                    v[j] = v[j+1];
-                    v[j+1] = saved;                    
+                    swap_with_next(v, j);                  
                 }
             }
         }
@@ -429,9 +426,7 @@ void sort_results(vector<Result>& v)
 
                 if(name1[k] > name2[k])
                 {
-                    Result saved = v[j];
-                    v[j] = v[j+1];
-                    v[j+1] = saved;
+                    swap_with_next(v, j);
                 }
             }
         }
