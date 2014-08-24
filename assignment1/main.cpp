@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include "stdlib.h"
 
 using namespace std;
 
@@ -51,7 +52,7 @@ struct Result
     int against_goal_number;
 };
 
-enum ERROS 
+enum error 
 {
     SUCCESS = 0,
     ERROR_INCORRECT_TOURNAMENT_NUMBER = 1,
@@ -62,18 +63,60 @@ enum ERROS
     ERROR_INCORRECT_GAME_NUMBER = 6,
     ERROR_TOO_LARGE_GOAL_NUMBER = 7,
     ERROR_PARSED_INVALID_TOKEN = 8,
+    ERROR_INCORRECT_INPUT_FILE_NAME = 9
 };
+
+
 
 int to_int(string str);
 bool get_string(ifstream& file, string& line);
-bool parse_table(ifstream& file, Table& table);
-bool parse_tournament(ifstream& file, Tournament& table);
-bool parse_game(string& str, Game& game);
+error parse_table(ifstream& file, Table& table);
+error parse_tournament(ifstream& file, Tournament& table);
+error parse_game(string& str, Game& game);
 void print_table(const Table& table);
 void print_tournament_results(const Tournament& tournament, const vector<Result>& results);
 void calculate_results(const Tournament& tournament, vector<Result>& results);
 void sort_results(vector<Result>& v);
 bool criterion(const vector<Result>& v, const int index);
+
+void process_error(error err)
+{
+    switch(err)
+    {
+        case SUCCESS:
+            return;
+        case ERROR_INCORRECT_TOURNAMENT_NUMBER:
+            cerr << "ERROR: Incorrect tournaments number (0 < N < 1000)" << endl;
+            break;
+        case ERROR_TOO_LARGE_TOURNAMENT_NAME_LENGTH:
+            cerr << "ERROR: Too large tournament name length (maximum 100 letters)" << endl;
+            break;
+        case ERROR_INCORRECT_TEAM_NUMBER:
+            cerr << "ERROR: Incorrect team number (1 < T <= 30)" << endl;
+            break;
+        case ERROR_TOO_LARGE_TEAM_NAME_LENGTH:
+            cerr << "ERROR: Too large team name length (maximum 30 letters)" << endl;
+            break;
+        case ERROR_FORBIDDEN_CHARACTER:
+            cerr << "ERROR: there are forbidden letters in team name (avoid using @ or #)" << endl;
+            break;
+        case ERROR_INCORRECT_GAME_NUMBER:
+            cerr << "ERROR: Incorrect game number (0 <= G <= 1000)" << endl;
+            break;
+        case ERROR_TOO_LARGE_GOAL_NUMBER:
+            cerr << "ERROR: Too large goal number (0 < GN < 20)" << endl;
+            break;
+        case ERROR_PARSED_INVALID_TOKEN:
+            cerr << "ERROR: can't parse" << endl;
+            break;
+        case ERROR_INCORRECT_INPUT_FILE_NAME:
+            cerr << "ERROR: Input file isn't specified" << endl;
+        default:
+            cerr << "ERROR: unknown" << endl;
+    }
+
+    exit(err);
+}
 
 int to_int(string str)
 {
@@ -93,7 +136,7 @@ bool get_string(ifstream& file, string& line)
     return false;
 }
 
-bool parse_table(ifstream& file, Table& table)
+error parse_table(ifstream& file, Table& table)
 {
     string str;
     if(get_string(file, str))
@@ -102,23 +145,23 @@ bool parse_table(ifstream& file, Table& table)
         
         if(table.tournament_number<=0 or table.tournament_number>=1000)
         {
-            cerr << "ERROR: Incorrect tournaments number (0 < N < 1000)" << endl;
-            return false;
+            return ERROR_INCORRECT_TOURNAMENT_NUMBER;
         }
     }
 
     for(int i = 0; i<table.tournament_number; ++i)
     {
         Tournament t;
-        if(!parse_tournament(file, t))
-            return false;
+        error err = parse_tournament(file, t);
+        if(err != SUCCESS)
+            return err;
         table.tournaments.push_back(t);
     }
 
-    return true;
+    return SUCCESS;
 }
 
-bool parse_tournament(ifstream& file, Tournament& t)
+error parse_tournament(ifstream& file, Tournament& t)
 {
     string str;
 
@@ -127,14 +170,12 @@ bool parse_tournament(ifstream& file, Tournament& t)
         t.name = str;
         if(str.length()>100)
         {
-            cerr << "ERROR: Too large tournament name (maximum 100 letters)" << endl;
-            return false;
+            return ERROR_TOO_LARGE_TOURNAMENT_NAME_LENGTH;
         }
     }
     else
     {
-        cerr << "ERROR: can't parse" << endl;
-        return false;
+        return ERROR_PARSED_INVALID_TOKEN;
     }
 
     if(get_string(file, str))
@@ -142,14 +183,12 @@ bool parse_tournament(ifstream& file, Tournament& t)
         t.team_number = to_int(str);
         if(t.team_number<=1 or t.team_number>30)
         {
-            cerr << "ERROR: Incorrect team number (1 < T <= 30)" << endl;
-            return false;
+            return ERROR_INCORRECT_TEAM_NUMBER;
         }
     }
     else
     {
-        cerr << "ERROR: can't parse" << endl;
-        return false;
+        return ERROR_PARSED_INVALID_TOKEN;
     }
 
     for(int i = 0; i < t.team_number; ++i)
@@ -158,19 +197,16 @@ bool parse_tournament(ifstream& file, Tournament& t)
         {
             if(str.length()>30)
             {
-                cerr << "ERROR: Too large team name (maximum 30 letters)" << endl;
-                return false;
+                return ERROR_TOO_LARGE_TEAM_NAME_LENGTH;
             }
             if(str.find("#")!=string::npos or str.find("@")!=string::npos)
             {
-                cerr << "ERROR: there are forbidden letters in team name (avoid using @ or #)" << endl;
-                return false;
+                return ERROR_FORBIDDEN_CHARACTER;
             }
             t.team_names.push_back(str);
             continue;
         }
-        cerr << "ERROR: can't parse" << endl;
-        return false;
+        return ERROR_PARSED_INVALID_TOKEN;
     }
 
     if(get_string(file, str))
@@ -178,14 +214,12 @@ bool parse_tournament(ifstream& file, Tournament& t)
         t.game_number = to_int(str);
         if(t.game_number<0 or t.game_number>1000)
         {
-            cerr << "ERROR: Incorrect game number (0 <= G <= 1000)" << endl;
-            return false;
+            return ERROR_INCORRECT_GAME_NUMBER;
         }
     }
     else
     {
-        cerr << "ERROR: can't parse" << endl;
-        return false;
+        return ERROR_PARSED_INVALID_TOKEN;
     }
 
     for(int i = 0; i < t.game_number; ++i)
@@ -193,19 +227,19 @@ bool parse_tournament(ifstream& file, Tournament& t)
         if(get_string(file, str))
         {
             Game game;
-            if(!parse_game(str, game))
-                return false;
+            error err = parse_game(str, game);
+            if(SUCCESS != err)
+                return err;
             t.game.push_back(game);
             continue;
         }
-        cerr << "ERROR: can't parse" << endl;
-        return false;
+        return ERROR_PARSED_INVALID_TOKEN;
     }
 
-    return true;
+    return SUCCESS;
 }
 
-bool parse_game(string& str, Game& game)
+error parse_game(string& str, Game& game)
 {
     string left = str.substr(0, str.find("@"));
     string right = str.substr(str.find("@")+1);
@@ -217,11 +251,10 @@ bool parse_game(string& str, Game& game)
 
     if(game.goal_number1 < 0 or game.goal_number1 >= 20 or game.goal_number2 < 0 or game.goal_number2 >= 20)
     {
-        cerr << "ERROR: Too large goal number (0 < GN < 20)" << endl;
-        return false;
+        return ERROR_TOO_LARGE_GOAL_NUMBER;
     }
 
-    return true;
+    return SUCCESS;
 }
 
 void print_table(const Table& table)
@@ -379,8 +412,7 @@ int main(int argc, char** argv)
 {
     if(argc != 2)
     {
-        cout << "ERROR: Input file isn't specified" << endl;
-        return 1;
+        process_error(ERROR_INCORRECT_INPUT_FILE_NAME);
     }
 
     ifstream file(argv[1]);
@@ -390,10 +422,7 @@ int main(int argc, char** argv)
 
     Table table;
 
-    if(!parse_table(file, table))
-        return 1;
-
-    //print_table(table);
+    process_error(parse_table(file, table));
 
     for(int i = 0; i < table.tournament_number; ++i)
     {
@@ -403,5 +432,5 @@ int main(int argc, char** argv)
         print_tournament_results(table.tournaments[i], results);
     }
 
-    return 0;
+    return SUCCESS;
 }
