@@ -51,6 +51,19 @@ struct Result
     int against_goal_number;
 };
 
+enum ERROS 
+{
+    SUCCESS = 0,
+    ERROR_INCORRECT_TOURNAMENT_NUMBER = 1,
+    ERROR_TOO_LARGE_TOURNAMENT_NAME_LENGTH = 2,
+    ERROR_INCORRECT_TEAM_NUMBER = 3,
+    ERROR_TOO_LARGE_TEAM_NAME_LENGTH = 4,
+    ERROR_FORBIDDEN_CHARACTER = 5,
+    ERROR_INCORRECT_GAME_NUMBER = 6,
+    ERROR_TOO_LARGE_GOAL_NUMBER = 7,
+    ERROR_PARSED_INVALID_TOKEN = 8,
+};
+
 int to_int(string str);
 bool get_string(ifstream& file, string& line);
 bool parse_table(ifstream& file, Table& table);
@@ -94,7 +107,7 @@ bool parse_table(ifstream& file, Table& table)
         }
     }
 
-    while(!file.eof())
+    for(int i = 0; i<table.tournament_number; ++i)
     {
         Tournament t;
         if(!parse_tournament(file, t))
@@ -129,7 +142,7 @@ bool parse_tournament(ifstream& file, Tournament& t)
         t.team_number = to_int(str);
         if(t.team_number<=1 or t.team_number>30)
         {
-            cerr << "ERROR: Incorrect teams number (1 < T <= 30)" << endl;
+            cerr << "ERROR: Incorrect team number (1 < T <= 30)" << endl;
             return false;
         }
     }
@@ -145,7 +158,7 @@ bool parse_tournament(ifstream& file, Tournament& t)
         {
             if(str.length()>30)
             {
-                cerr << "ERROR: Too team name (maximum 30 letters)" << endl;
+                cerr << "ERROR: Too large team name (maximum 30 letters)" << endl;
                 return false;
             }
             if(str.find("#")!=string::npos or str.find("@")!=string::npos)
