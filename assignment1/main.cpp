@@ -66,8 +66,6 @@ enum error
     ERROR_INCORRECT_INPUT_FILE_NAME = 9
 };
 
-
-
 int to_int(string str);
 bool get_string(ifstream& file, string& line);
 error parse_table(ifstream& file, Table& table);
@@ -78,6 +76,7 @@ void print_tournament_results(const Tournament& tournament, const vector<Result>
 void calculate_results(const Tournament& tournament, vector<Result>& results);
 void sort_results(vector<Result>& v);
 bool criterion(const vector<Result>& v, const int index);
+void process_error(error err);
 
 void process_error(error err)
 {
