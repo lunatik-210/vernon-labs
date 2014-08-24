@@ -63,7 +63,8 @@ enum error
     ERROR_INCORRECT_GAME_NUMBER = 6,
     ERROR_TOO_LARGE_GOAL_NUMBER = 7,
     ERROR_PARSED_INVALID_TOKEN = 8,
-    ERROR_INCORRECT_INPUT_FILE_NAME = 9
+    ERROR_INCORRECT_INPUT_FILE_NAME = 9,
+    ERROR_CANNT_OPEN_THE_FILE = 10
 };
 
 int to_int(string str);
@@ -383,6 +384,10 @@ bool criterion(const vector<Result>& v, const int i, const int j)
     string name1 = v[i].team_name;
     string name2 = v[j].team_name;
 
+    int length1 = name1.length(); 
+    int length2 = name2.length();
+    int min_length = (length1<length2)?length1:length2;
+
     for(int l = 0; l < length1; ++l)
     {
         name1[l] = tolower(name1[l]);
@@ -392,10 +397,6 @@ bool criterion(const vector<Result>& v, const int i, const int j)
     {
         name2[l] = tolower(name2[l]);
     }
-
-    int length1 = name1.length(); 
-    int length2 = name2.length();
-    int min_length = (length1<length2)?length1:length2;
 
     int k = 0;
     while(name1[k]==name2[k] and k<min_length) ++k;
