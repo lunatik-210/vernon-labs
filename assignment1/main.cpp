@@ -74,9 +74,13 @@ error parse_game(string& str, Game& game);
 void print_table(const Table& table);
 void print_tournament_results(const Tournament& tournament, const vector<Result>& results);
 void calculate_results(const Tournament& tournament, vector<Result>& results);
-void sort_results(vector<Result>& v);
-bool criterion(const vector<Result>& v, const int index);
+void bubble_sort(vector<Result>& v);
+bool criterion(const vector<Result>& v, const int i, const int j);
 void process_error(error err);
+void quick_sort(vector<Result>& v);
+void _quick_sort(vector<Result>& v, int left, int right);
+int _quick_sort_partition(vector<Result>& v, int left, int right);
+void swap(vector<Result>& v, int i, int j);
 
 void process_error(error err)
 {
@@ -349,31 +353,31 @@ void calculate_results(const Tournament& tournament, vector<Result>& results)
     }
 }
 
-bool criterion(const vector<Result>& v, const int index)
+bool criterion(const vector<Result>& v, const int i, const int j)
 {
-    if(v[index].earned_points != v[index+1].earned_points)
+    if(v[i].earned_points != v[j].earned_points)
     {
-        return (v[index].earned_points < v[index+1].earned_points);
+        return (v[i].earned_points < v[j].earned_points);
     }
-    if(v[index].win_number != v[index+1].win_number)
+    if(v[i].win_number != v[j].win_number)
     {
-        return (v[index].win_number < v[index+1].win_number);
+        return (v[i].win_number < v[j].win_number);
     }
-    if(v[index].goal_difference != v[index+1].goal_difference)
+    if(v[i].goal_difference != v[j].goal_difference)
     {
-        return (v[index].goal_difference < v[index+1].goal_difference);
+        return (v[i].goal_difference < v[j].goal_difference);
     }
-    if(v[index].scored_goal_number != v[index+1].scored_goal_number)
+    if(v[i].scored_goal_number != v[j].scored_goal_number)
     {
-        return (v[index].scored_goal_number < v[index+1].scored_goal_number);
+        return (v[i].scored_goal_number < v[j].scored_goal_number);
     }
-    if(v[index].played_game_number != v[index+1].played_game_number)
+    if(v[i].played_game_number != v[j].played_game_number)
     {
-        return (v[index].played_game_number > v[index+1].played_game_number);
+        return (v[i].played_game_number > v[j].played_game_number);
     }
 
-    string name1 = v[index].team_name;
-    string name2 = v[index+1].team_name;
+    string name1 = v[i].team_name;
+    string name2 = v[j].team_name;
 
     for(int l = 0; l < name1.length(); ++l)
     {
@@ -391,20 +395,54 @@ bool criterion(const vector<Result>& v, const int index)
     return (name1[k] > name2[k]);
 }
 
-void sort_results(vector<Result>& v)
+void swap(vector<Result>& v, int i, int j)
+{
+    Result saved = v[i];
+    v[i] = v[j];
+    v[j] = saved;    
+}
+
+void bubble_sort(vector<Result>& v)
 {
     for(int i = 0; i < v.size(); ++i)
     {
         for(int j = 0; j < v.size()-i-1; ++j)
         {
-            if(criterion(v, j))
+            if(criterion(v, j, j+1))
             {
-                Result saved = v[j];
-                v[j] = v[j+1];
-                v[j+1] = saved;
+                swap(v, j, j+1);
             }
         }
     }
+}
+
+void quick_sort(vector<Result>& v)
+{
+    _quick_sort(v, 0, v.size()-1);
+}
+
+void _quick_sort(vector<Result>& v, int left, int right)
+{
+    if(left>=right)
+        return;
+
+    int m = _quick_sort_partition(v, left, right);
+    _quick_sort(v, left, m-1);
+    _quick_sort(v, m+1, right);
+}
+
+int _quick_sort_partition(vector<Result>& v, int left, int right)
+{
+    int i = left-1;
+    for(int j = left; j<right+1; ++j)
+    {
+        if(!criterion(v, j, right))
+        {
+            i+=1;
+            swap(v, i, j);
+        }
+    }
+    return i;
 }
 
 int main(int argc, char** argv)
@@ -427,7 +465,8 @@ int main(int argc, char** argv)
     {
         vector<Result> results;
         calculate_results(table.tournaments[i], results);
-        sort_results(results);
+        //bubble_sort(results);
+        quick_sort(results);
         print_tournament_results(table.tournaments[i], results);
     }
 
