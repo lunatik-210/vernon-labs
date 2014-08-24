@@ -383,18 +383,22 @@ bool criterion(const vector<Result>& v, const int i, const int j)
     string name1 = v[i].team_name;
     string name2 = v[j].team_name;
 
-    for(int l = 0; l < name1.length(); ++l)
+    for(int l = 0; l < length1; ++l)
     {
         name1[l] = tolower(name1[l]);
     }
     
-    for(int l = 0; l < name2.length(); ++l)
+    for(int l = 0; l < length2; ++l)
     {
         name2[l] = tolower(name2[l]);
     }
 
+    int length1 = name1.length(); 
+    int length2 = name2.length();
+    int min_length = (length1<length2)?length1:length2;
+
     int k = 0;
-    while(name1[k]==name2[k]) ++k;
+    while(name1[k]==name2[k] and k<min_length) ++k;
 
     return (name1[k] > name2[k]);
 }
