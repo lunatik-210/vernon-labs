@@ -12,3 +12,5 @@ if __name__ == "__main__":
     for file in files:
         ret = subprocess.call("./a.out " + file['input'] + " > output", shell=True)
         print file['input'], filecmp.cmp(file['output'], 'output')
+
+    ret = subprocess.call("rm output", shell=True)
