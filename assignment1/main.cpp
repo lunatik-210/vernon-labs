@@ -82,7 +82,7 @@ void quick_sort(vector<Result>& v);
 void _quick_sort(vector<Result>& v, int left, int right);
 int _quick_sort_partition(vector<Result>& v, int left, int right);
 void swap(vector<Result>& v, int i, int j);
-void fill_result(Result& r, int goal_number1, int goal_number2)
+void fill_result(Result& r, int goal_number1, int goal_number2);
 
 void process_error(error err)
 {
