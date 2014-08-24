@@ -114,8 +114,10 @@ void process_error(error err)
             break;
         case ERROR_INCORRECT_INPUT_FILE_NAME:
             cerr << "ERROR: Input file isn't specified" << endl;
+            break;
         case ERROR_CANNT_OPEN_THE_FILE:
             cerr << "ERROR: File with the given input name cann't be oppened" << endl;
+            break;
         default:
             cerr << "ERROR: unknown" << endl;
     }
