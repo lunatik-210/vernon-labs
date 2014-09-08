@@ -1,7 +1,7 @@
 /********************************************************
 * ADS HW Assignment 1
 * Andrew Lapin
-* The purpose if each method is described in main.h file
+* The purpose of each method is described in main.h file
 ********************************************************/
 
 #include <iostream>
