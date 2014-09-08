@@ -2,6 +2,22 @@
 * ADS HW Assignment 1
 * Andrew Lapin
 * The purpose of each method is described in main.h file
+*********************************************************
+* in.txt file includes 9 tests
+* First two ones were given with HW Assignment
+* Then I added tests to check proper work of all six
+* criterions: 
+*  - Most points earned test
+*  - Most wins test
+*  - Most goal difference test
+*  - Most goals scored test
+*  - Fewest games played test
+*  - Case-intensitive lexicographic order test
+* If you look at the out.txt it becomes obvious that 
+* they checks functionality properly but look at "Fewest
+* games played test". Here there are some additional
+* teams which I used to prepare C and D simulate state
+* when only games played number will differ.
 ********************************************************/
 
 #include <iostream>
