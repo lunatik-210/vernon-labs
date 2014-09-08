@@ -1,3 +1,8 @@
+/********************************************************
+* ADS HW Assignment 1
+* Andrew Lapin
+********************************************************/
+
 #include <string>
 #include <vector>
 #include <fstream>
