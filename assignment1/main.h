@@ -86,7 +86,7 @@ error parse_game(std::string& str, Game& game);
 void print_table(const Table& table);
 
 // Output data stored in Tournament structure to the screen (terminal)
-void print_tournament_results(const Tournament& tournament, const std::vector<Result>& results);
+void print_tournament_results(const Tournament& tournament, const std::vector<Result>& results, std::ostream& stream);
 
 // Process data stored in Tournament structure ot calculate resulting table
 void calculate_results(const Tournament& tournament, std::vector<Result>& results);

@@ -223,13 +223,13 @@ void print_table(const Table& table)
     }
 }
 
-void print_tournament_results(const Tournament& tournament, const vector<Result>& results)
+void print_tournament_results(const Tournament& tournament, const vector<Result>& results, ostream& stream)
 {
-    cout << tournament.name << endl;
+    stream << tournament.name << endl;
 
     for(int j = 0; j < results.size(); ++j )
     {
-        cout << j+1 << ") " << results[j].team_name << " "
+        stream << j+1 << ") " << results[j].team_name << " "
              << results[j].earned_points << "p, "
              << results[j].played_game_number << "g "
              << "(" << results[j].win_number 
@@ -241,7 +241,7 @@ void print_tournament_results(const Tournament& tournament, const vector<Result>
              << endl;
     }
 
-    cout << endl;
+    stream << endl;
 }
 
 void fill_result(Result& r, int goal_number1, int goal_number2)
@@ -385,21 +385,31 @@ int _quick_sort_partition(vector<Result>& v, int left, int right)
 
 int main(int argc, char** argv)
 {
+    /*
     if(argc != 2)
     {
         process_error(ERROR_INCORRECT_INPUT_FILE_NAME);
     }
+    */
 
-    ifstream file(argv[1]);
+    ifstream filein("in.txt");
+    ofstream fileout("out.txt");
 
-    if (!file.is_open())
+    if (!filein.is_open())
     {
         process_error(ERROR_CANNT_OPEN_THE_FILE);
     }
 
     Table table;
 
-    process_error(parse_table(file, table));
+    process_error(parse_table(filein, table));
+
+    filein.close();
+
+    if (!fileout.is_open())
+    {
+        process_error(ERROR_CANNT_OPEN_THE_FILE);
+    }
 
     for(int i = 0; i < table.tournament_number; ++i)
     {
@@ -407,8 +417,10 @@ int main(int argc, char** argv)
         calculate_results(table.tournaments[i], results);
         //bubble_sort(results);
         quick_sort(results);
-        print_tournament_results(table.tournaments[i], results);
+        print_tournament_results(table.tournaments[i], results, fileout);
     }
+
+    fileout.close();
 
     return SUCCESS;
 }
