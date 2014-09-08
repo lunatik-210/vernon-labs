@@ -1,3 +1,9 @@
+/********************************************************
+* ADS HW Assignment 1
+* Andrew Lapin
+* The purpose if each method is described in main.h file
+********************************************************/
+
 #include <iostream>
 #include <sstream>
 #include "stdlib.h"
