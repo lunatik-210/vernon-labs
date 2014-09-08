@@ -1,88 +1,10 @@
 #include <iostream>
 #include <sstream>
-#include <fstream>
-#include <vector>
-#include <string>
 #include "stdlib.h"
 
+#include "main.h"
+
 using namespace std;
-
-struct Table;
-struct Tournament;
-struct Game;
-struct Result;
-
-struct Table 
-{
-    int tournament_number;
-    vector<Tournament> tournaments;
-};
-
-struct Tournament 
-{
-    string name;
-
-    int team_number;
-    vector<string> team_names;
-
-    int game_number;
-    vector<Game> game;
-};
-
-struct Game 
-{
-    string team_name1;
-    int goal_number1;
-
-    string team_name2;
-    int goal_number2;
-};
-
-struct Result 
-{
-    string team_name;
-
-    int earned_points;
-    int played_game_number;
-    int win_number;
-    int tie_number;
-    int loose_number;
-    int goal_difference;
-    int scored_goal_number;
-    int against_goal_number;
-};
-
-enum error 
-{
-    SUCCESS = 0,
-    ERROR_INCORRECT_TOURNAMENT_NUMBER = 1,
-    ERROR_TOO_LARGE_TOURNAMENT_NAME_LENGTH = 2,
-    ERROR_INCORRECT_TEAM_NUMBER = 3,
-    ERROR_TOO_LARGE_TEAM_NAME_LENGTH = 4,
-    ERROR_FORBIDDEN_CHARACTER = 5,
-    ERROR_INCORRECT_GAME_NUMBER = 6,
-    ERROR_TOO_LARGE_GOAL_NUMBER = 7,
-    ERROR_PARSED_INVALID_TOKEN = 8,
-    ERROR_INCORRECT_INPUT_FILE_NAME = 9,
-    ERROR_CANNT_OPEN_THE_FILE = 10
-};
-
-int to_int(string str);
-bool get_string(ifstream& file, string& line);
-error parse_table(ifstream& file, Table& table);
-error parse_tournament(ifstream& file, Tournament& table);
-error parse_game(string& str, Game& game);
-void print_table(const Table& table);
-void print_tournament_results(const Tournament& tournament, const vector<Result>& results);
-void calculate_results(const Tournament& tournament, vector<Result>& results);
-void bubble_sort(vector<Result>& v);
-bool criterion(const vector<Result>& v, const int i, const int j);
-void process_error(error err);
-void quick_sort(vector<Result>& v);
-void _quick_sort(vector<Result>& v, int left, int right);
-int _quick_sort_partition(vector<Result>& v, int left, int right);
-void swap(vector<Result>& v, int i, int j);
-void fill_result(Result& r, int goal_number1, int goal_number2);
 
 void process_error(error err)
 {
