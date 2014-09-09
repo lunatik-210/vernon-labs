@@ -1,6 +1,7 @@
 /********************************************************
 * ADS HW Assignment 1
 * Andrew Lapin
+* andrew.d.lapin@gmail.com
 *********************************************************
 * Programm reads data from in.txt and write output 
 * to out.txt.
