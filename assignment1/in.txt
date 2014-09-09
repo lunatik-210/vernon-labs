@@ -78,7 +78,7 @@ Team D
 Team A#3@0#Team C
 Team B#2@0#Team D
 Team B#1@0#Team D
-Case-intensitive lexicographic order test 1
+Case-insensitive lexicographic order test 1
 3
 AAA
 AAC
@@ -87,7 +87,7 @@ ACC
 Team A#2@2#Team B
 Team A#2@2#Team C
 Team C#2@2#Team B
-Case-intensitive lexicographic order test 2
+Case-insensitive lexicographic order test 2
 3
 CCC
 CCA

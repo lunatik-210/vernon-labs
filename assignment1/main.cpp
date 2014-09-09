@@ -1,7 +1,16 @@
 /********************************************************
 * ADS HW Assignment 1
 * Andrew Lapin
-* The purpose of each method is described in main.h file
+*********************************************************
+* Programm reads data from in.txt and write output 
+* to out.txt.
+* It uses quicksort algorithm to sort data but also 
+* the source code includes bubble sort implementation. 
+* There're two key methods here: 
+*  - quick_sort which implements the algorithm itself;
+*  - criterion which compares records by six criterions.
+* For more documentation about methods and data structures 
+* which are used here please look at main.h.
 *********************************************************
 * in.txt file includes 9 tests
 * First two ones were given with HW Assignment
