@@ -335,7 +335,6 @@ void fill_result(Result* results, int index, int goal_number1, int goal_number2)
     results[index].earned_points += 1;
 }
 
-
 void print_tournament_results(FILE *outfile, Tournament* tournament, Result* results)
 {
     int j;
@@ -358,7 +357,6 @@ void print_tournament_results(FILE *outfile, Tournament* tournament, Result* res
     }
     fprintf(outfile, "\n");
 }
-
 
 void calculate_results(Tournament* tournament, Result** results)
 {
