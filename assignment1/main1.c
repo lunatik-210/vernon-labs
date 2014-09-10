@@ -1,3 +1,35 @@
+/********************************************************
+* ADS HW Assignment 1
+* Andrew Lapin
+* andrew.d.lapin@gmail.com
+*********************************************************
+* Programm reads data from in.txt and write output 
+* to out.txt.
+* It uses quicksort algorithm to sort data but also 
+* the source code includes bubble sort implementation. 
+* There're two key methods here: 
+*  - quick_sort which implements the algorithm itself;
+*  - criterion which compares records by six criterions.
+* For more documentation about methods and data structures 
+* which are used here please look at main.h.
+*********************************************************
+* in.txt file includes 9 tests
+* First two ones were given with HW Assignment
+* Then I added tests to check proper work of all six
+* sorting criterions: 
+*  - Most points earned test
+*  - Most wins test
+*  - Most goal difference test
+*  - Most goals scored test
+*  - Fewest games played test
+*  - Case-insensitive lexicographic order test
+* If you look through the out.txt it becomes obvious that 
+* they checks functionality properly but look at "Fewest
+* games played test". Here there are some additional
+* teams which I used to prepare C and D simulate state
+* when only games played number will be differ.
+********************************************************/
+
 #include "string.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -304,14 +336,15 @@ void fill_result(Result* results, int index, int goal_number1, int goal_number2)
 }
 
 
-void print_tournament_results(Tournament* tournament, Result* results)
+void print_tournament_results(FILE *outfile, Tournament* tournament, Result* results)
 {
     int j;
-    printf("%s\n", tournament->name);
+    fprintf(outfile, "%s\n", tournament->name);
 
     for(j = 0; j < tournament->teams_number; ++j )
     {
-        printf("%d) %s %d p, %dg (%d-%d-%d), %dgd (%d-%d)\n",
+        fprintf(outfile, 
+            "%d) %s %d p, %dg (%d-%d-%d), %dgd (%d-%d)\n",
             j+1,
             results[j].team_name,
             results[j].earned_points,
@@ -323,7 +356,7 @@ void print_tournament_results(Tournament* tournament, Result* results)
             results[j].scored_goal_number,
             results[j].against_goal_number);
     }
-    printf("\n");
+    fprintf(outfile, "\n");
 }
 
 
@@ -476,8 +509,14 @@ void bubble_sort(Result* v, int size)
 int main(int argc, char** argv)
 {
     FILE *infile = fopen("in.txt", "r");
+    FILE *outfile = fopen("out.txt", "w");
     
     if(infile == NULL)
+    {
+        process_error(ERROR_CANNT_OPEN_THE_FILE);
+    }
+
+    if(outfile == NULL)
     {
         process_error(ERROR_CANNT_OPEN_THE_FILE);
     }
@@ -494,12 +533,13 @@ int main(int argc, char** argv)
         calculate_results(table->tournaments[i], &results);
         //bubble_sort(results, table->tournaments[i]->teams_number);
         quick_sort(results, table->tournaments[i]->teams_number);
-        print_tournament_results(table->tournaments[i], results);
+        print_tournament_results(outfile, table->tournaments[i], results);
         free_results(&results, table->tournaments[i]->teams_number);
     }
 
     free_table(&table);
     fclose(infile);
+    fclose(outfile);
 
     return 0;
 }
