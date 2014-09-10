@@ -189,7 +189,7 @@ error parse_file(FILE* infile, Table** table)
             {
                 return ERROR_PARSED_INVALID_TOKEN;
             }
-            if(strchr((*table)->tournaments[i]->team_names[j], '#') != NULL && 
+            if(strchr((*table)->tournaments[i]->team_names[j], '#') != NULL || 
                strchr((*table)->tournaments[i]->team_names[j], '@') != NULL)
             {
                 return ERROR_FORBIDDEN_CHARACTER;
