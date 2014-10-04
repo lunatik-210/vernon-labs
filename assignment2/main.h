@@ -50,6 +50,6 @@ int sample_poisson(double mean);
 
 error parse_params(FILE* infile, Params* params);
 
-void print_params(Params* params);
+void print_params(FILE *outfile, Params* params);
 
-void print_results(Results* results);
+void print_results(FILE *outfile, Results* results);

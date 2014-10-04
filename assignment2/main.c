@@ -90,21 +90,21 @@ error parse_params(FILE* infile, Params* params)
     return SUCCESS;
 }
 
-void print_params(Params* params)
+void print_params(FILE *outfile, Params* params)
 {
-    printf("Arrival rate:    %d cars per minute\n", params->arrival);
-    printf("Departure:       %d seconds per car\n", params->departure);
-    printf("Runtime:         %d minutes\n", params->runtime);
-    printf("Time increment:  %d milliseconds\n", params->increment);
-    printf("Light sequence:  Red %d seconds; Green %d seconds\n", params->red, params->green);
+    fprintf(outfile, "Arrival rate:    %d cars per minute\n", params->arrival);
+    fprintf(outfile, "Departure:       %d seconds per car\n", params->departure);
+    fprintf(outfile, "Runtime:         %d minutes\n", params->runtime);
+    fprintf(outfile, "Time increment:  %d milliseconds\n", params->increment);
+    fprintf(outfile, "Light sequence:  Red %d seconds; Green %d seconds\n", params->red, params->green);
 }
 
-void print_results(Results* results)
+void print_results(FILE *outfile, Results* results)
 {
-    printf("Average length:  %d cars\n", results->avg_len);
-    printf("Maximum length:  %d cars\n", results->max_len);
-    printf("Average wait:    %d seconds\n", results->avg_wait);
-    printf("Maximum wait:    %d seconds\n", results->max_wait);    
+    fprintf(outfile, "Average length:  %d cars\n", results->avg_len);
+    fprintf(outfile, "Maximum length:  %d cars\n", results->max_len);
+    fprintf(outfile, "Average wait:    %d seconds\n", results->avg_wait);
+    fprintf(outfile, "Maximum wait:    %d seconds\n", results->max_wait);    
 }
 
 void simulation(Params* params, Results* results)
@@ -271,14 +271,14 @@ int main(int argc, char** argv)
         process_error(ERROR_INCORRECT_CASE_NUMBER);
     }
 
-    printf("Andrew Lapin\n\n");
+    fprintf(outfile, "Andrew Lapin\n\n");
     for(i = 0; i<N; ++i)
     {
         process_error(parse_params(infile, &params));
         simulation(&params, &results);
-        print_params(&params);
-        print_results(&results);
-        printf("\n");
+        print_params(outfile, &params);
+        print_results(outfile, &results);
+        fprintf(outfile, "\n");
     }
 
     fclose(infile);

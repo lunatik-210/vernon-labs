@@ -45,7 +45,6 @@ void qDestroy(Queue* queue)
 void qPush(Queue* queue, QCarElement element)
 {
     QNode *newNodeP;
-    QNode *rearP;
 
     /* Allocate space for a node in the linked list. */
 
@@ -118,12 +117,14 @@ int qCount(Queue* queue)
 
 void qPrint(Queue* queue)
 {
+	QNode *node = NULL;
+
     if (TRUE == qIsEmpty(queue))
     {
         return;
     }
 
-    QNode *node = queue->front;
+    node = queue->front;
 
     do
     {
