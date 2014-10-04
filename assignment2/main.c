@@ -125,7 +125,7 @@ void simulation(Params* params, Results* results)
     int departure_timer = 0;
     int departured_cars_number = 0;
 
-    double mean = ((double)(delta) / 1000.0) * (double)(params->arrival);
+    double mean = ((double)(delta) / 60000.0) * (double)(params->arrival);
 
     int tick = 0;
 
@@ -137,15 +137,13 @@ void simulation(Params* params, Results* results)
     results->avg_wait = 0;
     results->max_wait = 0;
 
-    srand( (unsigned)time( NULL ) );
-
     while(timer < runtime_msec)
     {
         switch(light_state)
         {
             case GREEN:
                 departure_timer+= delta;
-                if(light_timer >= red_msec)
+                if(light_timer >= green_msec)
                 {
                     departure_timer = 0;
                     light_timer = 0;
@@ -153,7 +151,7 @@ void simulation(Params* params, Results* results)
                 }
                 break;
             case RED:
-                if(light_timer >= green_msec)
+                if(light_timer >= red_msec)
                 {
                     if(qCount(queue) > 0)
                     {
@@ -270,6 +268,8 @@ int main(int argc, char** argv)
     {
         process_error(ERROR_INCORRECT_CASE_NUMBER);
     }
+
+    srand( (unsigned)time( NULL ) );
 
     fprintf(outfile, "Andrew Lapin\n\n");
     for(i = 0; i<N; ++i)
