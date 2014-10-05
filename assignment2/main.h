@@ -41,21 +41,33 @@ enum error
     SUCCESS = 0,
     ERROR_INCORRECT_CASE_NUMBER = 1,
     ERROR_PARSED_INVALID_TOKEN = 2,
-    ERROR_CANNT_OPEN_THE_FILE = 3
+    ERROR_KEY_CANT_BE_RECOGNIZED = 3,
+    ERROR_CANNT_OPEN_THE_FILE = 4
 };
 
+// Traffic light color
 enum color 
 {
     GREEN = 0,
     RED = 1
 };
 
+// Process errors and exit in case of exception
 void process_error(error err);
 
-int sample_poisson(double mean);
-
+// Prases input file to fill a params structure
 error parse_params(FILE* infile, Params* params);
 
+// Prints params structure into outfile
 void print_params(FILE *outfile, Params* params);
 
+// Prints reqults structure into outfile
 void print_results(FILE *outfile, Results* results);
+
+// Runs simulation of road intersection with traffic 
+// lights, arriving and departing cars
+void simulation(Params* params, Results* results);
+
+// Poisson destribution is used to simulate a number 
+// of arriving cars
+int sample_poisson(double mean);

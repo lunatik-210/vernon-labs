@@ -7,30 +7,35 @@
 #include "main.h"
 #include "queue.h"
 
+// Process errors and exit in case of exception
 void process_error(error err)
 {
-    char* mesage = NULL;
+    char* message = NULL;
     switch(err)
     {
         case SUCCESS:
             return;
         case ERROR_INCORRECT_CASE_NUMBER:
-            mesage = "ERROR: Incorrect tournaments number (0 < N < 1000)";
+            message = "ERROR: Incorrect tournaments number (0 < N < 1000)";
             break;
         case ERROR_PARSED_INVALID_TOKEN:
-            mesage = "ERROR: can't parse";
+            message = "ERROR: can't parse";
             break;
+        case ERROR_KEY_CANT_BE_RECOGNIZED:
+            message = "ERROR: can't recognize the key";
+            break; 
         case ERROR_CANNT_OPEN_THE_FILE:
-            mesage = "ERROR: File with the given input name cann't be oppened";
+            message = "ERROR: File with the given input name cann't be oppened";
             break;
         default:
-            mesage = "ERROR: unknown";
+            message = "ERROR: unknown";
     }
 
-    printf("%s\n", mesage);
+    printf("%s\n", message);
     exit(err);
 }
 
+// Prases input file to fill a params structure
 error parse_params(FILE* infile, Params* params)
 {
     int value;
@@ -43,6 +48,10 @@ error parse_params(FILE* infile, Params* params)
     params->increment = 0;
     params->red = 0;
     params->green = 0;
+
+    /*
+    * Reads six key-value pairs from input file
+    */
 
     for(i=0; i<6; ++i)
     {
@@ -91,11 +100,14 @@ error parse_params(FILE* infile, Params* params)
             params->green = value;
             continue;
         }
+
+        return ERROR_KEY_CANT_BE_RECOGNIZED;
     }
 
     return SUCCESS;
 }
 
+// Prints params structure into outfile
 void print_params(FILE *outfile, Params* params)
 {
     fprintf(outfile, "Arrival rate:    %d cars per minute\n", params->arrival);
@@ -105,6 +117,7 @@ void print_params(FILE *outfile, Params* params)
     fprintf(outfile, "Light sequence:  Red %d seconds; Green %d seconds\n", params->red, params->green);
 }
 
+// Prints reqults structure into outfile
 void print_results(FILE *outfile, Results* results)
 {
     fprintf(outfile, "Average length:  %d cars\n", results->avg_len);
@@ -113,8 +126,15 @@ void print_results(FILE *outfile, Results* results)
     fprintf(outfile, "Maximum wait:    %d seconds\n", results->max_wait);    
 }
 
+// Runs simulation of road intersection with traffic 
+// lights, arriving and departing cars
 void simulation(Params* params, Results* results)
 {
+    /*
+    * Define all the necessary variables
+    * (Translates all the inputs into milliseconds)
+    */
+
     int i = 0;
     int wait_time = 0;
 
@@ -123,17 +143,23 @@ void simulation(Params* params, Results* results)
     int green_msec = params->green * 1000;
     int runtime_msec = params->runtime * 60000;
     int delta = params->increment;
+    
+    // Timer defines current time since the start of simulation
+    // while tick defines the iteration number since the start
     int timer = 0;
+    int tick = 0;
 
+    // light_timer defines the time since the last traffic light state change
     int light_timer = 0;
     color light_state = GREEN;
 
+    // departure_timer defines the time since the previous car was departured
     int departure_timer = 0;
     int departured_cars_number = 0;
 
+    // mean is a variable for arrival car simulation 
+    // (used by sample_poisson method )
     double mean = ((double)(delta) / 60000.0) * (double)(params->arrival);
-
-    int tick = 0;
 
     Queue *queue = qCreate();
     QCarElement car;
@@ -143,8 +169,16 @@ void simulation(Params* params, Results* results)
     results->avg_wait = 0;
     results->max_wait = 0;
 
+    /*
+    * Starting simulation process
+    */
+
     while(timer < runtime_msec)
     {
+        /*
+        * Switch the traffic light state if time has exceed
+        */
+
         switch(light_state)
         {
             case GREEN:
@@ -179,16 +213,30 @@ void simulation(Params* params, Results* results)
                 }
                 break;
         }
+
+        /*
+        * Increment all the time counters
+        */
         
         timer += delta;
         light_timer += delta;
         tick += 1;
+
+        /*
+        * Simulation of arrival cars
+        * (adding arrival cars to queue)
+        */
 
         for(i = 0; i<sample_poisson(mean); ++i)
         {
             car.enter_time = timer;
             qPush(queue, car);
         }
+
+        /*
+        * Departure car if departure time has exceed 
+        * and the traffic light state is GREEN
+        */
 
         if(light_state == GREEN && departure_timer >= departure_msec && qCount(queue) > 0)
         {
@@ -207,6 +255,10 @@ void simulation(Params* params, Results* results)
             departured_cars_number += 1;
         }
 
+        /*
+        * Counting results
+        */
+
         results->avg_len += qCount(queue);
 
         if(qCount(queue) > results->max_len)
@@ -224,6 +276,8 @@ void simulation(Params* params, Results* results)
     qDestroy(queue);
 }
 
+// Poisson destribution is used to simulate a number 
+// of arriving cars
 int sample_poisson(double mean)
 {
     int count;
@@ -265,6 +319,10 @@ int main(int argc, char** argv)
     {
         process_error(ERROR_CANNT_OPEN_THE_FILE);
     }
+
+    /*
+    * Reads number of test simulations from the file
+    */
     
     if(fscanf(infile, "%d", &N) != 1)
     {
@@ -275,8 +333,14 @@ int main(int argc, char** argv)
         process_error(ERROR_INCORRECT_CASE_NUMBER);
     }
 
+    /*
+    * Seed the randomizer
+    */
     srand( (unsigned)time( NULL ) );
 
+    /*
+    * Runs N simulations and prints results into output file
+    */
     fprintf(outfile, "Andrew Lapin\n\n");
     for(i = 0; i<N; ++i)
     {
