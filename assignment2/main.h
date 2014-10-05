@@ -1,3 +1,9 @@
+/********************************************************
+* ADS HW Assignment 2
+* Andrew Lapin
+* andrew.d.lapin@gmail.com
+********************************************************/
+
 #include "string.h"
 #include "stdio.h"
 #include "stdlib.h"

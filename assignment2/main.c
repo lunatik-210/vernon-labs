@@ -1,3 +1,9 @@
+/********************************************************
+* ADS HW Assignment 2
+* Andrew Lapin
+* andrew.d.lapin@gmail.com
+********************************************************/
+
 #include "main.h"
 #include "queue.h"
 

@@ -1,6 +1,12 @@
+/********************************************************
+* ADS HW Assignment 2
+* Andrew Lapin
+* andrew.d.lapin@gmail.com
+********************************************************/
 
 #include "queue.h"
 
+// Queue factory - allocates memory for Queue structure
 Queue* qCreate()
 {
     Queue *queue;
@@ -18,6 +24,7 @@ Queue* qCreate()
     return queue;
 }
 
+// Remove all the nodes from queue and frees the memory
 void qDestroy(Queue* queue)
 {
     /*
@@ -42,6 +49,7 @@ void qDestroy(Queue* queue)
     free(queue);
 }
 
+// Pushes element into queue rear
 void qPush(Queue* queue, QCarElement element)
 {
     QNode *newNodeP;
@@ -76,10 +84,17 @@ void qPush(Queue* queue, QCarElement element)
     queue->count += 1;
 }
 
+// Pops an element from queue front and frees node memory
 QCarElement qPop(Queue* queue)
 {
     QNode *oldNodeP = queue->front;
     QCarElement element = oldNodeP->element;
+
+    /*
+    * If queue is not empty then take an
+    * element from the front, decrease counter
+    * and frees the node memory
+    */
 
     if(0 == qCount(queue))
     {
@@ -95,6 +110,7 @@ QCarElement qPop(Queue* queue)
     return element;
 }
 
+// Checks if queue is empty
 int qIsEmpty(Queue* queue)
 {
     if(NULL == queue->front)
@@ -105,6 +121,7 @@ int qIsEmpty(Queue* queue)
     return FALSE;
 }
 
+// Count the amount of nodes remained in the queue
 int qCount(Queue* queue)
 {
     if(TRUE == qIsEmpty(queue))
@@ -115,9 +132,14 @@ int qCount(Queue* queue)
     return queue->count;
 }
 
+// Prints the queue into stdout
 void qPrint(Queue* queue)
 {
 	QNode *node = NULL;
+
+    /*
+    * If tje queue is not empty take front node
+    */
 
     if (TRUE == qIsEmpty(queue))
     {
@@ -125,6 +147,11 @@ void qPrint(Queue* queue)
     }
 
     node = queue->front;
+
+    /*
+    * Prints all the node remained in queue 
+    * one by one
+    */
 
     do
     {
