@@ -3,7 +3,13 @@
 * Andrew Lapin
 * andrew.d.lapin@gmail.com
 ********************************************************/
-/*
+
+/********************************************************
+* Project include queue implementation (queue.c queue.h)
+* And Simulation of Queueing Behaviour at Traffic Lights 
+********************************************************/
+
+/********************************************************
 * Testing (input.txt)
 * 1) First two simulations checks case sensitivity of keys name
 * and sensitivity to the keys order. So it tests parse_params method.
@@ -23,7 +29,7 @@
 *
 * 4) The fifth one checks critical point so that all inputs are 0 
 * numbers as well as outputs.
-*/
+********************************************************/
 
 
 #include "main.h"
@@ -303,7 +309,7 @@ void simulation(Params* params, Results* results)
     * Taking in account remaining cars in queue
     */
 
-    while(0 != qCount(queue))
+    while(FALSE == qIsEmpty(queue))
     {
         car = qPop(queue);
 
