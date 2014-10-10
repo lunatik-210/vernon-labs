@@ -3,6 +3,17 @@
 * Andrew Lapin
 * andrew.d.lapin@gmail.com
 ********************************************************/
+/*
+* Testing (input.txt)
+* 1) First two simulations checks case sensitivity of keys name
+* and sensitivity to the keys order. So it tests parse_params method.
+*
+* 2) Third simulation checks if green light = 0, so no cars 
+* must be departed.
+*
+* 3)
+*/
+
 
 #include "main.h"
 #include "queue.h"
@@ -193,7 +204,7 @@ void simulation(Params* params, Results* results)
         {
             case GREEN:
                 departure_timer+= delta;
-                if(light_timer >= green_msec)
+                if(light_timer >= red_msec && red_msec > 0)
                 {
                     departure_timer = 0;
                     light_timer = 0;
@@ -201,7 +212,7 @@ void simulation(Params* params, Results* results)
                 }
                 break;
             case RED:
-                if(light_timer >= red_msec)
+                if(light_timer >= green_msec && green_msec > 0)
                 {
                     if(qCount(queue) > 0)
                     {
