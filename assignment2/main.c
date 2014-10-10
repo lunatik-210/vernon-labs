@@ -41,6 +41,7 @@ error parse_params(FILE* infile, Params* params)
     int value;
     char key[10];
     int i = 0;
+    char *p;
 
     params->arrival = 0;
     params->departure = 0;
@@ -65,37 +66,46 @@ error parse_params(FILE* infile, Params* params)
             return ERROR_PARSED_INVALID_TOKEN;
         }
 
-        if(strcmp("Arrival", key) == 0)
+        // Corrects key to be non case sensitive
+
+        for (p = key; *p != '\0'; ++p)
+        {
+            *p = tolower(*p);
+        }
+
+        // Saves key/value pairs
+
+        if(strcmp("arrival", key) == 0)
         {
             params->arrival = value;
             continue;
         }
 
-        if(strcmp("Departure", key) == 0)
+        if(strcmp("departure", key) == 0)
         {
             params->departure = value;
             continue;
         }
 
-        if(strcmp("Runtime", key) == 0)
+        if(strcmp("runtime", key) == 0)
         {
             params->runtime = value;
             continue;
         }
 
-        if(strcmp("Increment", key) == 0)
+        if(strcmp("increment", key) == 0)
         {
             params->increment = value;
             continue;
         }
 
-        if(strcmp("Red", key) == 0)
+        if(strcmp("red", key) == 0)
         {
             params->red = value;
             continue;
         }
 
-        if(strcmp("Green", key) == 0)
+        if(strcmp("green", key) == 0)
         {
             params->green = value;
             continue;
@@ -110,20 +120,20 @@ error parse_params(FILE* infile, Params* params)
 // Prints params structure into outfile
 void print_params(FILE *outfile, Params* params)
 {
-    fprintf(outfile, "Arrival rate:    %d cars per minute\n", params->arrival);
-    fprintf(outfile, "Departure:       %d seconds per car\n", params->departure);
-    fprintf(outfile, "Runtime:         %d minutes\n", params->runtime);
-    fprintf(outfile, "Time increment:  %d milliseconds\n", params->increment);
-    fprintf(outfile, "Light sequence:  Red %d seconds; Green %d seconds\n", params->red, params->green);
+    fprintf(outfile, "Arrival rate:     %d cars per minute\n", params->arrival);
+    fprintf(outfile, "Departure:        %d seconds per car\n", params->departure);
+    fprintf(outfile, "Runtime:          %d minutes\n", params->runtime);
+    fprintf(outfile, "Time increment:   %d milliseconds\n", params->increment);
+    fprintf(outfile, "Light sequence:   Red %d seconds; Green %d seconds\n", params->red, params->green);
 }
 
 // Prints reqults structure into outfile
 void print_results(FILE *outfile, Results* results)
 {
-    fprintf(outfile, "Average length:  %d cars\n", results->avg_len);
-    fprintf(outfile, "Maximum length:  %d cars\n", results->max_len);
-    fprintf(outfile, "Average wait:    %d seconds\n", results->avg_wait);
-    fprintf(outfile, "Maximum wait:    %d seconds\n", results->max_wait);    
+    fprintf(outfile, "Average length:   %d cars\n", results->avg_len);
+    fprintf(outfile, "Maximum length:   %d cars\n", results->max_len);
+    fprintf(outfile, "Average wait:     %d seconds\n", results->avg_wait);
+    fprintf(outfile, "Maximum wait:     %d seconds\n", results->max_wait);    
 }
 
 // Runs simulation of road intersection with traffic 
@@ -151,7 +161,7 @@ void simulation(Params* params, Results* results)
 
     // light_timer defines the time since the last traffic light state change
     int light_timer = 0;
-    color light_state = GREEN;
+    color light_state = RED;
 
     // departure_timer defines the time since the previous car was departured
     int departure_timer = 0;
@@ -266,6 +276,25 @@ void simulation(Params* params, Results* results)
             results->max_len = qCount(queue);
         }
     }
+    
+    /*
+    * Taking in account remaining cars in queue
+    */
+
+    while(FALSE == qIsEmpty(queue))
+    {
+        car = qPop(queue);
+
+        wait_time = timer-car.enter_time;
+        results->avg_wait += wait_time;
+
+        if(wait_time > results->max_wait)
+        {
+            results->max_wait = wait_time;
+        }
+
+        departured_cars_number += 1;
+    }
 
     results->avg_len /= tick;
     results->avg_wait /= departured_cars_number;
@@ -341,7 +370,7 @@ int main(int argc, char** argv)
     /*
     * Runs N simulations and prints results into output file
     */
-    fprintf(outfile, "Andrew Lapin\n\n");
+    fprintf(outfile, "Andrew Lapin\n");
     for(i = 0; i<N; ++i)
     {
         process_error(parse_params(infile, &params));
