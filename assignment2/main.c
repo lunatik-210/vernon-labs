@@ -10,8 +10,19 @@
 *
 * 2) Third simulation checks if green light = 0, so no cars 
 * must be departed.
+* As a consequence in the output:
+* Maximum wait ~= Runtime = 5 minutes
 *
-* 3)
+* 3) Fourth simulation checks if an arrival rate = 0, so no single car
+*  must be in a queue.
+* As a consequence in the output:
+* Average length:   0 cars
+* Maximum length:   0 cars
+* Average wait:     0 seconds
+* Maximum wait:     0 seconds
+*
+* 4) The fifth one checks critical point so that all inputs are 0 
+* numbers as well as outputs.
 */
 
 
@@ -292,7 +303,7 @@ void simulation(Params* params, Results* results)
     * Taking in account remaining cars in queue
     */
 
-    while(FALSE == qIsEmpty(queue))
+    while(0 != qCount(queue))
     {
         car = qPop(queue);
 
@@ -307,8 +318,15 @@ void simulation(Params* params, Results* results)
         departured_cars_number += 1;
     }
 
-    results->avg_len /= tick;
-    results->avg_wait /= departured_cars_number;
+    if( tick > 0 )
+    {
+        results->avg_len /= tick;
+    }
+    
+    if( departured_cars_number > 0 )
+    {
+        results->avg_wait /= departured_cars_number;
+    }
     
     results->avg_wait /= 1000;
     results->max_wait /= 1000;

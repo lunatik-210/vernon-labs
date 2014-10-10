@@ -1,4 +1,4 @@
-3
+5
 DeparturE 5
 Runtime 5
 INCREMENT 10
@@ -22,4 +22,10 @@ Runtime 5
 Increment 10
 Red 10 
 Green 10
+Arrival 0
+Departure 0
+Runtime 0
+Increment 0
+Red 0
+Green 0
 Arrival 0
