@@ -4,6 +4,9 @@
 * andrew.d.lapin@gmail.com
 ********************************************************/
 
+#ifndef MAIN_H
+#define MAIN_H
+
 #include "string.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -71,3 +74,5 @@ void simulation(Params* params, Results* results);
 // Poisson destribution is used to simulate a number 
 // of arriving cars
 int sample_poisson(double mean);
+
+#endif // MAIN_H
