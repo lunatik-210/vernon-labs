@@ -14,12 +14,20 @@
 * 1) First two simulations checks case sensitivity of keys name
 * and sensitivity to the keys order. So it tests parse_params method.
 *
-* 2) Third simulation checks if green light = 0, so no cars 
+* 2) Third simulation checks if GREEN light = 0, so no cars 
 * must be departed.
 * As a consequence in the output:
 * Maximum wait ~= Runtime = 5 minutes
 *
-* 3) Fourth simulation checks if an arrival rate = 0, so no single car
+* 3) Fourth simulation checks if RED light = 0, so twice more cars
+* should be departured comparing to the previous test.
+* As a consequence we get very small numbers of queue length and wait:
+* Average length:   1 cars
+* Maximum length:   6 cars
+* Average wait:     8 seconds
+* Maximum wait:     29 seconds
+*
+* 4) Fifth simulation checks if an arrival rate = 0, so no single car
 *  must be in a queue.
 * As a consequence in the output:
 * Average length:   0 cars
@@ -27,7 +35,7 @@
 * Average wait:     0 seconds
 * Maximum wait:     0 seconds
 *
-* 4) The fifth one checks critical point so that all inputs are 0 
+* 5) The last one checks critical point so that all inputs are 0 
 * numbers as well as outputs.
 ********************************************************/
 
@@ -221,7 +229,7 @@ void simulation(Params* params, Results* results)
         {
             case GREEN:
                 departure_timer+= delta;
-                if(light_timer >= red_msec && red_msec > 0)
+                if(light_timer >= green_msec && red_msec > 0)
                 {
                     departure_timer = 0;
                     light_timer = 0;
@@ -229,7 +237,7 @@ void simulation(Params* params, Results* results)
                 }
                 break;
             case RED:
-                if(light_timer >= green_msec && green_msec > 0)
+                if(light_timer >= red_msec && green_msec > 0)
                 {
                     if(qCount(queue) > 0)
                     {
