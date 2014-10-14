@@ -35,8 +35,11 @@
 * Average wait:     0 seconds
 * Maximum wait:     0 seconds
 *
-* 5) The last one checks critical point so that all inputs are 0 
+* 5) Sixth checks critical point so that all inputs are 0 
 * numbers as well as outputs.
+*
+* 6) In the last test I set departure = 1000, it simulates behaviour 
+* like we set GREEN = 0, so it must be approximately equal to third simulation.
 ********************************************************/
 
 
