@@ -4,6 +4,13 @@
 * andrew.d.lapin@gmail.com
 ********************************************************/
 
+/********************************************************
+* Project include all the structures definitions and 
+* methods declaration in touristguide.h as well as the
+* implementation of those methods in touristguide.cpp.
+********************************************************/
+
+
 #include "touristguide.h"
 
 

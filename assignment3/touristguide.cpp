@@ -251,6 +251,7 @@ void explore_city_roads(int city, vector<Route>& routes, Graph& g)
 // Runs the main process of finding the route
 bool prcoess(Graph& g, Task& t, Results& resulst)
 {
+	// routes - used to track all to-explore roads
     vector<Route> routes;
     int came_from_city = t.source_city;
 
@@ -258,8 +259,10 @@ bool prcoess(Graph& g, Task& t, Results& resulst)
 
     while(false == (is_found = is_goal(came_from_city, t)))
     {
+    	// adding new roads to routes list
         explore_city_roads(came_from_city, routes, g);
         sort(routes, g);
+        // moving to the next city
         came_from_city = explore_route(routes, g);
     }
 
