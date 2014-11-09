@@ -1,34 +1,77 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <set>
 #include <vector>
 #include <cmath>
 
 using namespace std;
 
-struct Task {
+struct Task 
+{
     int source_city;
     int destination_city;
     int tourists;
 };
 
-struct Edge {
-    int node1;
-    int node2;
+struct Road 
+{
+    int city1;
+    int city2;
     int weight;
     bool explored;
 };
 
-struct Node {
-    int edge_id;
-    set<int> edges;
+struct City 
+{
+    int came_from_road;
+    int came_from_city;
+    vector<int> roads;
 };
 
-struct Graph {
-    vector<Edge> edges;
-    vector<Node> nodes;
+struct Graph 
+{
+    vector<Road> roads;
+    vector<City> cities;
 };
+
+struct Route
+{
+    int city;
+    int road;
+};
+
+struct Results
+{
+    vector<int> route;
+    int trips_number;
+};
+
+bool parse_input(ifstream& in, Graph& g, Task& t);
+
+void prepare_graph(Graph& g, Task& t);
+
+void print_graph_status(const Graph& g);
+
+void print_routes(const vector<Route>& routes);
+
+void print_graph(const Graph& g);
+
+void sort(vector<Route>& routes, const Graph& g);
+
+int get_neighbor(Route route, const Graph& g);
+
+int explore_route(vector<Route>& routes, Graph& g);
+
+bool is_goal(int city, const Task& t);
+
+void reverse(vector<int>& route);
+
+void traverse_route(const Graph& g, const Task& t, Results& resulst);
+
+void explore_city_roads(int city, vector<Route>& routes, Graph& g);
+
+bool prcoess(Graph& g, Task& t, Results& resulst);
+
 
 bool parse_input(ifstream& in, Graph& g, Task& t)
 {
@@ -37,8 +80,8 @@ bool parse_input(ifstream& in, Graph& g, Task& t)
     {
         in >> ncities >> nroads;
         if(ncities == 0 && nroads==0) return false;
-        g.edges.resize(nroads);
-        g.nodes.resize(ncities);
+        g.roads.resize(nroads);
+        g.cities.resize(ncities);
     }
     else
     {
@@ -56,10 +99,10 @@ bool parse_input(ifstream& in, Graph& g, Task& t)
         {
             return false;
         }
-        Edge e = {city1, city2, npassengers, false};
-        g.edges[i] = e;
-        g.nodes[city1-1].edges.insert(i);
-        g.nodes[city2-1].edges.insert(i);
+        Road r = {city1, city2, npassengers, false};
+        g.roads[i] = r;
+        g.cities[city1-1].roads.push_back(i);
+        g.cities[city2-1].roads.push_back(i);
     }
 
     in >> t.source_city >> t.destination_city >> t.tourists;
@@ -68,39 +111,40 @@ bool parse_input(ifstream& in, Graph& g, Task& t)
 
 void prepare_graph(Graph& g, Task& t)
 {
-    for(int i = 0; i<g.edges.size(); ++i)
+    for(int i = 0; i<g.roads.size(); ++i)
     {
-        if( g.edges[i].weight > 0 )
+        if( g.roads[i].weight > 0 )
         {
-            g.edges[i].weight = int(ceil(float(t.tourists+1)/float(g.edges[i].weight)));
+            g.roads[i].weight = int(ceil(float(t.tourists)/float(g.roads[i].weight-1)));
         }
         else
         {
-            g.edges[i].weight = 0;
+            g.roads[i].weight = 0;
         }
     }
 
-    for(int i = 0; i<g.nodes.size(); ++i)
+    for(int i = 0; i<g.cities.size(); ++i)
     {
-        g.nodes[i].edge_id = -1;
+        g.cities[i].came_from_road = -1;
+        g.cities[i].came_from_city = -1;
     }
 }
 
 void print_graph_status(const Graph& g)
 {
-    cout << "Unexplored edges:";
-    for(int i = 0; i<g.edges.size(); ++i)
+    cout << "Unexplored roads:";
+    for(int i = 0; i<g.roads.size(); ++i)
     {
-        if(g.edges[i].explored == false)
+        if(g.roads[i].explored == false)
         {
             cout << " " << i;
         }
     }
     cout << endl;
-    cout << "Explored edges:";
-    for(int i = 0; i<g.edges.size(); ++i)
+    cout << "Explored roads:";
+    for(int i = 0; i<g.roads.size(); ++i)
     {
-        if(g.edges[i].explored == true)
+        if(g.roads[i].explored == true)
         {
             cout << " " << i;
         }
@@ -108,48 +152,38 @@ void print_graph_status(const Graph& g)
     cout << endl;
 }
 
-void print_v(const vector<int>& v)
+void print_routes(const vector<Route>& routes)
 {
-    for(int i = 0; i<v.size(); ++i)
+    cout << "Routes: ";
+    for(int i = 0; i<routes.size(); ++i)
     {
-        cout << " " << v[i];
+        cout << " (" << routes[i].city << "," << routes[i].road << ")";
     }
-    cout << endl;    
-}
-
-void print_to_explore(const vector<int>& to_explore)
-{
-    cout << "To explore:";
-    print_v(to_explore);
-}
-
-void print_route(const vector<int>& route)
-{
-    cout << "Route: ";
-    print_v(route);
-    cout << "Size: " << route.size() << endl;
+    cout << endl; 
 }
 
 void print_graph(const Graph& g)
 {
-    for(int i = 0; i<g.edges.size(); ++i)
+    for(int i = 0; i<g.roads.size(); ++i)
     {
-        cout << "Edge [" << i << "]: " 
-             << g.edges[i].node1 << " "
-             << g.edges[i].node2 << " "
-             << g.edges[i].weight << endl;
+        cout << "Road [" << i << "]: " 
+             << g.roads[i].city1 << " "
+             << g.roads[i].city2 << " "
+             << g.roads[i].weight << endl;
     }
 
     cout << endl;
 
-    for(int i = 0; i<g.nodes.size(); ++i)
+    for(int i = 0; i<g.cities.size(); ++i)
     {
-        cout << "Node [" << i+1 << "]: ";
+        cout << "City [" << i+1 << "]: ";
 
-        for (std::set<int>::iterator it = g.nodes[i].edges.begin(); it != g.nodes[i].edges.end(); ++it)
+        for(int j = 0; j<g.cities[i].roads.size(); ++j)
         {
-            cout << *it << " ";
+            cout << g.cities[i].roads[j] << " ";
         }
+
+        cout << "(" << g.cities[i].came_from_city << "|" << g.cities[i].came_from_road << "|" << g.roads[g.cities[i].came_from_road].weight << ")";
 
         cout << endl;
     }
@@ -157,70 +191,59 @@ void print_graph(const Graph& g)
     cout << endl;
 }
 
-void sort(vector<int>& to_explore, const Graph& g)
+void sort(vector<Route>& routes, const Graph& g)
 {
-    for(int i = 0; i<to_explore.size(); ++i)
+    for(int i = 0; i<routes.size(); ++i)
     {
-        for(int j = 0; j<to_explore.size()-i-1; ++j)
+        for(int j = 0; j<routes.size()-i-1; ++j)
         {
-            if(g.edges[to_explore[j]].weight < g.edges[to_explore[j+1]].weight)
+            if(g.roads[routes[j].road].weight < g.roads[routes[j+1].road].weight)
             {
-                int buff = to_explore[j];
-                to_explore[j] = to_explore[j+1];
-                to_explore[j+1] = buff;
+                Route buff = routes[j];
+                routes[j] = routes[j+1];
+                routes[j+1] = buff;
             }
         }
     }
 }
 
-void add_to_explore(int source_city, vector<int>& to_explore, Graph& g)
+int get_neighbor(Route route, const Graph& g)
 {
-    for (std::set<int>::iterator it = g.nodes[source_city-1].edges.begin(); it != g.nodes[source_city-1].edges.end(); ++it)
+    if(g.roads[route.road].city1 == route.city)
     {
-        int edge_id = *it;
-        if(g.edges[edge_id].explored == false)
-        {
-            g.edges[edge_id].explored = true;
-            to_explore.push_back(edge_id);
-        }
-    }    
-}
-
-int get_neighbor(int city, int edge_id, const Graph& g)
-{
-    if(g.edges[edge_id].node1 == city)
-    {
-        return g.edges[edge_id].node2;
+        return g.roads[route.road].city2;
     }
-
-    return g.edges[edge_id].node1;
+    return g.roads[route.road].city1;
 }
 
-int explore_route(int came_from_city, vector<int>& to_explore, Graph& g)
+int explore_route(vector<Route>& routes, Graph& g)
 {
-    if(to_explore.empty())
+    if(routes.empty())
         return -1;
 
-    int edge_id = to_explore.back();
-    to_explore.pop_back();
+    Route route = routes.back();
+    routes.pop_back();
 
-    int edge_id_old = g.nodes[came_from_city-1].edge_id;
+    int neighbor_city = get_neighbor(route, g);
+    int road_id_old = g.cities[neighbor_city-1].came_from_road;
 
-    if(edge_id_old == -1)
+    if(road_id_old == -1)
     {
-        g.nodes[came_from_city-1].edge_id = edge_id;
+        g.cities[neighbor_city-1].came_from_road = route.road;
+        g.cities[neighbor_city-1].came_from_city = route.city;
     }
     else
     {
-        Edge edge_new = g.edges[edge_id];
-        Edge edge_old = g.edges[edge_id_old];
+        Road edge_new = g.roads[route.road];
+        Road edge_old = g.roads[road_id_old];
         if(edge_new.weight < edge_old.weight)
         {
-            g.nodes[came_from_city-1].edge_id = edge_id;
+            g.cities[neighbor_city-1].came_from_road = route.road;
+            g.cities[neighbor_city-1].came_from_city = route.city;
         }
     }
 
-    return get_neighbor(came_from_city, edge_id, g);
+    return neighbor_city;
 }
 
 bool is_goal(int city, const Task& t)
@@ -242,60 +265,59 @@ void reverse(vector<int>& route)
     }
 }
 
-void traverse_route(const Graph& g, const Task& t, vector<int>& route)
+void traverse_route(const Graph& g, const Task& t, Results& resulst)
 {
     int city = t.destination_city;
+    resulst.trips_number = g.roads[g.cities[city-1].came_from_road].weight;
 
-    while(city!=t.source_city)
+    while(city!=t.source_city && city!=-1)
     {
-        cout << city << endl;
-        route.push_back(city);
-        city = get_neighbor(city, g.nodes[city-1].edge_id, g);   
+        resulst.route.push_back(city);
+        city = g.cities[city-1].came_from_city;
+
+        if(g.cities[city-1].came_from_road != -1 && resulst.trips_number < g.roads[g.cities[city-1].came_from_road].weight)
+            resulst.trips_number = g.roads[g.cities[city-1].came_from_road].weight;
+    }
+    
+    resulst.route.push_back(city);
+    reverse(resulst.route);
+}
+
+void explore_city_roads(int city, vector<Route>& routes, Graph& g)
+{
+    for(int i = 0; i<g.cities[city-1].roads.size(); ++i)
+    {
+        int road_id = g.cities[city-1].roads[i];
+        if(g.roads[road_id].explored == false)
+        {
+            g.roads[road_id].explored = true;
+            Route r = {city, road_id};
+            routes.push_back(r);
+        }
     }
 }
 
-void prcoess(Graph& g, Task& t)
+bool prcoess(Graph& g, Task& t, Results& resulst)
 {
-    vector<int> to_explore;
+    vector<Route> routes;
     int came_from_city = t.source_city;
 
-    /*
-    print_graph_status(g);
-    print_to_explore(to_explore);
-    cout << "---" << endl;
-    */
-    
     bool is_found;
 
     while(false == (is_found = is_goal(came_from_city, t)))
     {
-        add_to_explore(came_from_city, to_explore, g);
-        sort(to_explore, g);
-        print_to_explore(to_explore);
-        came_from_city = explore_route(came_from_city, to_explore, g);
-        if(came_from_city == -1) break;
-        print_graph_status(g);
-        cout << "---" << endl;
+        explore_city_roads(came_from_city, routes, g);
+        sort(routes, g);
+        came_from_city = explore_route(routes, g);
     }
-
-    vector<int> route;
 
     if(is_found)
     {
-        cout << "--RESULT--" << endl;
-        //traverse_route(g, t, route);
-        print_route(route);
+        traverse_route(g, t, resulst);
+        return true;
     }
 
-    /*
-    print_graph_status(g);
-    print_to_explore(to_explore);
-    cout << "---" << endl;
-
-    cout << to_explore.back() << endl;
-    to_explore.pop_back();
-    print_to_explore(to_explore);
-    */
+    return false;
 }
 
 int main(int aegc, char** argv)
@@ -303,17 +325,30 @@ int main(int aegc, char** argv)
     ifstream in("input.txt");
     ofstream out("output.txt");
 
+    int scenario_number = 0;
+    out << "Andrew Lapin" << endl;
+
     while(!in.eof())
     {
         Graph g;
         Task t;
+        Results resulst;
 
-        if( false == parse_input(in, g, t) )
+        if(false == parse_input(in, g, t))
             return 1;
 
         prepare_graph(g, t);
-        //print_graph(g);
-        prcoess(g, t);
+        prcoess(g, t, resulst);
+
+        ++scenario_number;
+        out << "Scenario #" << scenario_number << endl;
+        out << "Minimum Number of Trips = " << resulst.trips_number << endl;
+        out << "Route =";
+        for(int i = 0; i<resulst.route.size(); ++i)
+        {
+            out  << " " << resulst.route[i];
+        }
+        out << endl;
     }
 
     return 0;
