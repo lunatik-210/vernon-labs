@@ -132,21 +132,20 @@ void print_graph(const Graph& g)
     cout << endl;
 }
 
-// Implements bubble sort algorithm for routes
-// It's used for the reason that the last element of
-// the list should always be with the higher bandwidth
-void sort(vector<Route>& routes, const Graph& g)
+// Performs one iteration of bubbling of an array element
+// (is used to keep routes list sorted after adding new element)
+void bubble(vector<Route>& routes, const Graph& g)
 {
-    for(int i = 0; i<routes.size(); ++i)
+    if(routes.size()<2)
+        return;
+
+    for(int i = 0; i<routes.size()-1; ++i)
     {
-        for(int j = 0; j<routes.size()-i-1; ++j)
+        if(g.roads[routes[i].road].weight < g.roads[routes[i+1].road].weight)
         {
-            if(g.roads[routes[j].road].weight < g.roads[routes[j+1].road].weight)
-            {
-                Route buff = routes[j];
-                routes[j] = routes[j+1];
-                routes[j+1] = buff;
-            }
+            Route buff = routes[i];
+            routes[i] = routes[i+1];
+            routes[i+1] = buff;
         }
     }
 }
@@ -244,6 +243,7 @@ void explore_city_roads(int city, vector<Route>& routes, Graph& g)
             g.roads[road_id].explored = true;
             Route r = {city, road_id};
             routes.push_back(r);
+            bubble(routes, g);
         }
     }
 }
@@ -261,7 +261,7 @@ bool prcoess(Graph& g, Task& t, Results& resulst)
     {
     	// adding new roads to routes list
         explore_city_roads(came_from_city, routes, g);
-        sort(routes, g);
+
         // moving to the next city
         came_from_city = explore_route(routes, g);
     }

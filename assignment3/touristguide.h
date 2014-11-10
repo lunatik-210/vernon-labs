@@ -84,10 +84,9 @@ void print_routes(const std::vector<Route>& routes);
 // Prints entire the Graph structure (used for debug)
 void print_graph(const Graph& g);
 
-// Implements bubble sort algorithm for routes
-// It's used for the reason that the last element of
-// the list should always be with the higher bandwidth
-void sort(std::vector<Route>& routes, const Graph& g);
+// Performs one iteration of bubbling of an array element
+// (is used to keep routes list sorted after adding new element)
+void bubble(std::vector<Route>& routes, const Graph& g);
 
 // Returs the id of neighbor city by given route
 int get_neighbor(Route route, const Graph& g);
