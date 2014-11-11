@@ -53,6 +53,8 @@ void prepare_graph(Graph& g, Task& t)
     {
         if( g.roads[i].weight > 0 )
         {
+            // converts the maximum number of passengers per trip into 
+            // minimum number of trips for the route given passengers to transfer
             g.roads[i].weight = int(ceil(float(t.tourists)/float(g.roads[i].weight-1)));
         }
         else
@@ -167,12 +169,14 @@ int explore_route(vector<Route>& routes, Graph& g)
     if(routes.empty())
         return -1;
 
+    // Take route with maximum weight (trips number)
     Route route = routes.back();
     routes.pop_back();
 
     int neighbor_city = get_neighbor(route, g);
     int road_id_old = g.cities[neighbor_city-1].came_from_road;
 
+    // Mark previous city and previous route in edge (road)
     if(road_id_old == -1)
     {
         g.cities[neighbor_city-1].came_from_road = route.road;
