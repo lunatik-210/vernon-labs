@@ -56,12 +56,12 @@
 * 1-5-4 (in fact 1-5-4 and 1-2-3-4 have the same minimum
 * number of trips)
 *
-* [Case 3] Is based on "Graph 2". Again extends previous
+* [Case 4] Is based on "Graph 2". Again extends previous
 * case with increasing number of passengers = 15. In that
 * case algorithm cann't go with the previous route it would  
 * require more trips so it would choose route 1-2-3-4.
 *
-* [Case 4] Is based on "Graph 4". Here we have many possible
+* [Case 5] Is based on "Graph 4". Here we have many possible
 * routes to go but the most optimal one is 1-2-3-4-9-6-5.
 *
 ********************************************************/
