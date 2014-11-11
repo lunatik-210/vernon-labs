@@ -195,10 +195,7 @@ int explore_route(vector<Route>& routes, Graph& g)
 // Verfifies if we reach the goal
 bool is_goal(int city, const Task& t)
 {
-    if(city == t.destination_city)
-    {
-        return true;
-    }
+    return (city == t.destination_city);
 }
 
 // Reverses list
