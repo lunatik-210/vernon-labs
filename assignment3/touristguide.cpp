@@ -216,6 +216,13 @@ void reverse(vector<int>& route)
 // Retrive the route which we should follow and fill Results structure
 void traverse_route(const Graph& g, const Task& t, Results& resulst)
 {
+    if(t.destination_city == t.source_city || g.cities.size() == 1 || g.roads.size() == 0)
+    {
+        resulst.route.push_back(t.destination_city);
+        resulst.trips_number = 0;
+        return;
+    }
+
     int city = t.destination_city;
     resulst.trips_number = g.roads[g.cities[city-1].came_from_road].weight;
 
