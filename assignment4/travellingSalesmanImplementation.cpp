@@ -13,6 +13,8 @@
  
 #include "travellingSalesman.h"
 
+#include <vector>
+
 // fill solution with initial values
 // path cost/weight = INT_MAX
 // path = [ -1, ... ]
@@ -77,15 +79,17 @@ bool is_solution(int k, int n)
 // backtracking algorythm itself with pruning 
 void backtrack(int* path, int k, int n, input_type* input, solution_type* solution)
 {
-    // murking already visited shops
-    bool is_used[k+1];
-    for(int i = 0; i<n-1; ++i) is_used[i] = false;
+    // marking already visited shops
+    //std::vector<bool> is_used(n);
+	bool *is_used = (bool*)malloc(n*sizeof(bool));
+
+    for(int i = 0; i<n; ++i) is_used[i] = false;
     for(int i = 0; i<k+1; ++i) if(path[i]!=-1) is_used[path[i]] = true;
 
     if(is_solution(k, n) == true)
     {
         // completing permutation
-        for(int i = 0; i<n-1; ++i) 
+        for(int i = 0; i<n; ++i) 
         {
             if(is_used[i] == false)
             {
@@ -105,7 +109,7 @@ void backtrack(int* path, int k, int n, input_type* input, solution_type* soluti
     else
     {
         // generate new permutations using unvisited shops
-        for(int i = 0; i<n-1; ++i) 
+        for(int i = 0; i<n; ++i) 
         {
             if(is_used[i] == false)
             {
@@ -119,6 +123,8 @@ void backtrack(int* path, int k, int n, input_type* input, solution_type* soluti
             }
         }
     }
+
+	free(is_used);
 }
 
 
