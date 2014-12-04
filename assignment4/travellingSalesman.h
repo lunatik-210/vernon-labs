@@ -1,5 +1,4 @@
 /* 
-
     travellingSalesman.h - interface file for the solution of the travelling saleman problem by exhaustive search using backtracking
 
     CS-CO-412 Algorithms and Data Structures Assignment No. 4
@@ -86,6 +85,15 @@
     The solution uses combinatorial search with backtracking so we seek the permutation of the shops that provided the minimum length tour 
     Instead of enumerating permutations of the shop names we associate an integer key with each shop name and form permutations of these keys.
 
+    Tests
+    -----
+    1,2,3) First three tests are taken from the example.
+
+    4) Is a complex test to check algorythm work on random data with maximum number of nodes.
+
+    5) Checks if all of the costs are 0 we chose first best permutation.
+
+    6) Path costs were choosen so that the solution should be Morgan-s4-s2-s3-s1-Morgan as the path cost is 0.
 */
  
 #include "stdio.h"

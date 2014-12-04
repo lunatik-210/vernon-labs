@@ -13,8 +13,6 @@
  
 #include "travellingSalesman.h"
 
-#include <vector>
-
 // fill solution with initial values
 // path cost/weight = INT_MAX
 // path = [ -1, ... ]
@@ -80,7 +78,6 @@ bool is_solution(int k, int n)
 void backtrack(int* path, int k, int n, input_type* input, solution_type* solution)
 {
     // marking already visited shops
-    //std::vector<bool> is_used(n);
 	bool *is_used = (bool*)malloc(n*sizeof(bool));
 
     for(int i = 0; i<n; ++i) is_used[i] = false;
